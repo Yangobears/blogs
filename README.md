@@ -37,6 +37,6 @@ Then go to path '/welcome'
 
 ## Built With
 
-* [Webapp2](http://www.dropwizard.io/1.0.2/docs/) - The web framework
-* [Google App Engine](https://maven.apache.org/) - Deployment
-* [NDB](https://rometools.github.io/rome/) - Database
+* [Webapp2](https://webapp2.readthedocs.io/) - The web framework
+* [Google App Engine](https://cloud.google.com/appengine/) - Deployment
+* [NDB](https://cloud.google.com/appengine/docs/python/ndb/) - Database
