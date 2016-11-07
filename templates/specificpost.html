@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Index{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block content %}
+  <div class="error">
+    <h3>{{error}}</h3>
+  </div>
+  <a class="btn btn-default" href ="/blogs">see all posts</a>
+  {% if permission %}
+      <a class="btn btn-default" href = {{editLink}}> Edit </a>
+      <form method="post" action={{deleteLink}}>
+        <button type="submit" class="btn btn-default">
+          Delete
+        </button>
+      </form>
+  {% endif %}
+
+  {{post.render() | safe}}
+
+<ul class="list-inline">
+  <li>
+    <form method="post" action={{likeLink}} class="inline">
+      <button type="submit"  class="btn btn-default">
+       Like
+      </button>
+    </form>
+
+  </li>
+  <li>
+    <a href="#" class="new-comment-button btn btn-default">
+     Write a comment
+   </a>
+
+  </li>
+</ul>
+
+  <div class="comment-heading">
+    Comments
+  </div>
+  {% for c in comments %}
+    {{ c.render() | safe }}
+    <br><br>
+  {% endfor %}
+  <div class="new-comment-form">
+    <form method="post" action='/comment/new'>
+      <label>
+        <div>comment</div>
+        <input type="hidden" name="postId" value="{{post.key.id()}}" />
+        <input type="text" name="content" value="{{content}}" />
+      </label>
+      <input class="btn btn-default" type="submit">
+    </form>
+  </div>
+
+{% endblock %}

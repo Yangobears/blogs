@@ -1,11 +1,16 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html>
+{% block content %}
   <head>
-    <title>Unit 2 Signup</title>
+    <title>Welcome</title>
   </head>
 
   <body>
-    <h2>Welcome, {{username}}!</h2>
+    <h2>Welcome to your blog space, {{username}}!</h2>
+    <a class="posts-lik btn btn-default" href="/blogs">See all blogs</a>
+
+    <a class="new-post btn btn-default" href="/blog/new">Write new post</a>
   </body>
+
 </html>
+{% endblock %}
