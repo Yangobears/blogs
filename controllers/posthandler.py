@@ -20,7 +20,8 @@ class ViewPost(BlogHandler):
         postEnt = key.get()
         if not postEnt:
             self.error(404)
-            return
+            return self.render('404.html')
+
         postIdStr = str(postEnt.key.id())
         likeLink = '/blog/%s/like' % postIdStr
         editLink = '/blog/%s/edit' % postIdStr
@@ -46,11 +47,11 @@ class NewPost(BlogHandler):
         if self.user:
             self.render("newpost.html")
         else:
-            self.redirect("/login")
+            return self.redirect("/login")
 
     def post(self):
         if not self.user:
-            self.redirect('/blogs')
+            return self.redirect('/login')
 
         title = self.request.get('title')
         content = self.request.get('content')
@@ -65,7 +66,7 @@ class NewPost(BlogHandler):
             ident = p_key.id()
             time.sleep(0.1)
 
-            self.redirect('/blog/%s' % str(p_key.id()))
+            return self.redirect('/blog/%s' % str(p_key.id()))
         else:
             error = "title and content, please!"
             self.render("newpost.html", title=title, content=content,
@@ -75,23 +76,25 @@ class NewPost(BlogHandler):
 class EditPost(BlogHandler):
     def get(self, post_id):
         if not self.user:
-            self.redirect('/login')
-            return
+            return self.redirect('/login')
 
         key = ndb.Key('Post', int(post_id), parent=utils.blog_key())
         postEnt = key.get()
         if not postEnt:
             self.error(404)
-            return
+            return self.render('404.html')
         if postEnt.author != self.user.name:
             error = "You can not edit post of other author"
-            self.redirect('/blog/%s?error=%s' % (str(postEnt.key.id()), error))
-            return
+            return self.redirect('/blog/%s?error=%s' %
+                                 (str(postEnt.key.id()), error))
 
         self.render("editpost.html", post=postEnt,
                     cancelLink='/blog/%s' % str(key.id()))
 
     def post(self, post_id):
+        if not self.user:
+            return self.redirect('/login')
+
         title = self.request.get('title')
         content = self.request.get('content')
         key = ndb.Key('Post', int(post_id), parent=utils.blog_key())
@@ -102,7 +105,7 @@ class EditPost(BlogHandler):
             postEnt.content = content
             postEnt.put()
             time.sleep(0.1)
-            self.redirect('/blog/%s' % str(key.id()))
+            return self.redirect('/blog/%s' % str(key.id()))
         else:
             error = "title and content, please!"
             self.render("editpost.html", post=postEnt, error=error)
@@ -111,13 +114,13 @@ class EditPost(BlogHandler):
 class DeletePost(BlogHandler):
     def post(self, post_id):
         if not self.user:
-            self.redirect('/login')
+            return self.redirect('/login')
 
         key = ndb.Key('Post', int(post_id), parent=utils.blog_key())
         postEnt = key.get()
         if not postEnt:
             self.error(404)
-            return
+            return self.render('404.html')
         if postEnt.author != self.user.name:
             error = "You can not delete post of other author"
             self.redirect('/blog/%s?error=%s' % (str(postEnt.key.id()), error))
@@ -132,13 +135,13 @@ class DeletePost(BlogHandler):
 class LikePost(BlogHandler):
     def post(self, post_id):
         if not self.user:
-            self.redirect('/login')
+            return self.redirect('/login')
         key = ndb.Key('Post', int(post_id), parent=utils.blog_key())
         postEnt = key.get()
 
         if not postEnt:
             self.error(404)
-            return
+            return self.render('404.html')
         if self.user:
             if postEnt.author == self.user.name:
                 error = "You cannot like your own post"

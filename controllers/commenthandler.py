@@ -11,8 +11,8 @@ class NewComment(BlogHandler):
 
     def post(self):
         if not self.user:
-            self.redirect('/login')
-            return
+            return self.redirect('/login')
+
         postId = int(self.request.get('postId'))
         content = self.request.get('content')
         comment = Comment(parent=utils.comment_key(),
@@ -20,23 +20,22 @@ class NewComment(BlogHandler):
                           postId=postId,
                           content=content)
         comment.put()
-        # For redirect to show new result
+        # Dealing with eventual consistency
         time.sleep(0.1)
-        self.redirect('/blog/%s' % str(postId))
+        return self.redirect('/blog/%s' % str(postId))
 
 
 class DeleteComment(BlogHandler):
     def post(self):
         if not self.user:
-            self.redirect('/login')
-            return
+            return self.redirect('/login')
 
         commentId = int(self.request.get('commentId'))
         key = ndb.Key('Comment', int(commentId), parent=utils.comment_key())
         commentEnt = key.get()
         if not commentEnt:
             self.error(404)
-            return
+            return self.render('404.html')
         if commentEnt.userId != self.user.key.id():
             error = "You can not delete comment of other author"
             self.redirect('/blog/%s?error=%s' %
@@ -51,8 +50,7 @@ class DeleteComment(BlogHandler):
 class EditComment(BlogHandler):
     def post(self):
         if not self.user:
-            self.redirect('/login')
-            return
+            return self.redirect('/login')
 
         commentId = int(self.request.get('commentId'))
         content = self.request.get('content')
@@ -60,7 +58,7 @@ class EditComment(BlogHandler):
         commentEnt = key.get()
         if not commentEnt:
             self.error(404)
-            return
+            return self.render('404.html')
         if commentEnt.userId != self.user.key.id():
             error = "You can not edit comment of other author"
             self.redirect('/blog/%s?error=%s' %
@@ -70,4 +68,4 @@ class EditComment(BlogHandler):
         commentEnt.content = content
         commentEnt.put()
         time.sleep(0.1)
-        self.redirect('/blog/%s' % str(commentEnt.postId))
+        return self.redirect('/blog/%s' % str(commentEnt.postId))

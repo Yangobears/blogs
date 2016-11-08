@@ -71,7 +71,7 @@ class Register(Signup):
             u.put()
 
             self.login(u)
-            self.redirect('/welcome')
+            return self.redirect('/welcome')
 
 
 class Login(BlogHandler):
@@ -85,7 +85,7 @@ class Login(BlogHandler):
         u = User.login(username, password)
         if u:
             self.login(u)
-            self.redirect('/welcome')
+            return self.redirect('/welcome')
         else:
             msg = 'Invalid login'
             self.render('login-form.html', error=msg)
@@ -94,4 +94,4 @@ class Login(BlogHandler):
 class Logout(BlogHandler):
     def get(self):
         self.logout()
-        self.redirect('/signup')
+        return self.redirect('/signup')

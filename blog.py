@@ -15,6 +15,11 @@ class Welcome(BlogHandler):
         else:
             self.redirect('/signup')
 
+
+def handle_404(request, response, exception):
+    response.set_status(404)
+    response.write(utils.render_str('404.html'))
+
 app = webapp2.WSGIApplication([('/blogs', AllPosts),
                                ('/blog/(\d+)', ViewPost),
                                ('/blog/(\d+)/like', LikePost),
@@ -30,3 +35,5 @@ app = webapp2.WSGIApplication([('/blogs', AllPosts),
                                ('/welcome', Welcome)
                                ],
                               debug=True)
+
+app.error_handlers[404] = handle_404
